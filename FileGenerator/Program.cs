@@ -37,13 +37,22 @@ public class RandomDataFileGenerator(string outputFile, double targetSizeInGB)
     /// <returns></returns>
     private string GenerateRandomData()
     {
-        var sb = new StringBuilder();
         int number = _random.Next(1, 100000);
         string text = _sampleStrings[_random.Next(_sampleStrings.Length)];
-        sb.Append(number);
-        sb.Append(". ");
-        sb.Append(text);
-        return sb.ToString();
+
+        Span<char> buffer = stackalloc char[10 + text.Length];
+
+        if (number.TryFormat(buffer, out int charsWritten))
+        {
+            buffer[charsWritten++] = '.';
+            buffer[charsWritten++] = ' ';
+
+            text.AsSpan().CopyTo(buffer[charsWritten..]);
+
+            return new string(buffer);
+        }
+
+        return string.Empty;
     }
 }
 
@@ -65,9 +74,9 @@ class Program
         var generator = new RandomDataFileGenerator(outputFile, targetSizeInGB);
         var stopwatch = new Stopwatch();
 
-        stopwatch.Start(); 
-        generator.GenerateFile(); 
-        stopwatch.Stop(); 
+        stopwatch.Start();
+        generator.GenerateFile();
+        stopwatch.Stop();
 
         Console.WriteLine($"Time taken: {stopwatch.Elapsed.TotalSeconds} seconds");
         Console.WriteLine($"File generated: {outputFile} ({targetSizeInGB} GB)");
