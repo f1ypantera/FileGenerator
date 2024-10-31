@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Diagnostics;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace FileGenerator;
@@ -36,9 +37,13 @@ public class RandomDataFileGenerator(string outputFile, double targetSizeInGB)
     /// <returns></returns>
     private string GenerateRandomData()
     {
+        var sb = new StringBuilder();
         int number = _random.Next(1, 100000);
         string text = _sampleStrings[_random.Next(_sampleStrings.Length)];
-        return $"{number}. {text}";
+        sb.Append(number);
+        sb.Append(". ");
+        sb.Append(text);
+        return sb.ToString();
     }
 }
 
@@ -58,8 +63,13 @@ class Program
             double.Parse);
 
         var generator = new RandomDataFileGenerator(outputFile, targetSizeInGB);
-        generator.GenerateFile();
+        var stopwatch = new Stopwatch();
 
+        stopwatch.Start(); 
+        generator.GenerateFile(); 
+        stopwatch.Stop(); 
+
+        Console.WriteLine($"Time taken: {stopwatch.Elapsed.TotalSeconds} seconds");
         Console.WriteLine($"File generated: {outputFile} ({targetSizeInGB} GB)");
     }
 
