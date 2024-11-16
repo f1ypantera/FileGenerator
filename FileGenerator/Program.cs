@@ -60,8 +60,8 @@ class Program
 {
     static void Main()
     {
-        string outputFile = GetValidatedInput<string>(
-            "Enter the output file name (e.g., output.txt): ",
+        string file = GetValidatedInput<string>(
+            "Enter file name (e.g., file.txt): ",
             "Invalid file name.",
             input => !string.IsNullOrWhiteSpace(input) && IsValidFileName(input));
 
@@ -71,7 +71,7 @@ class Program
             input => double.TryParse(input, out double size) && size > 0,
             double.Parse);
 
-        var generator = new RandomDataFileGenerator(outputFile, targetSizeInGB);
+        var generator = new RandomDataFileGenerator(file, targetSizeInGB);
         var stopwatch = new Stopwatch();
 
         stopwatch.Start();
@@ -79,7 +79,7 @@ class Program
         stopwatch.Stop();
 
         Console.WriteLine($"Time taken: {stopwatch.Elapsed.TotalSeconds} seconds");
-        Console.WriteLine($"File generated: {outputFile} ({targetSizeInGB} GB)");
+        Console.WriteLine($"File generated: {file} ({targetSizeInGB} GB)");
     }
 
     /// <summary>
